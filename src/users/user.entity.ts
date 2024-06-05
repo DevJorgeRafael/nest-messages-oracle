@@ -1,3 +1,5 @@
+import { Course } from "src/courses/entities/course.entity";
+import { Enrollment } from "src/courses/entities/enrollment.entity";
 import { User_Role } from "src/role/entities/user_role.entity";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 
@@ -20,4 +22,10 @@ export class User {
 
     @OneToMany(() => User_Role, user_role => user_role.user)
     userRoles: User_Role[];
+
+    @OneToMany(() => Course, course => course.user)
+    courses: Course[];
+
+    @OneToMany(() => Enrollment, enrollment => enrollment.user)
+    enrollments: Enrollment[];
 }
