@@ -1,27 +1,52 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from '../entities/course.entity';
 import { Repository } from 'typeorm';
 import { CreateCourseDto } from '../dto/create-course.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class CoursesService {
     constructor(
         @InjectRepository(Course)
         private readonly courseRepository: Repository<Course>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
     ){}
 
-    async create(createCourseDto: CreateCourseDto) {
+    async create(createCourseDto: CreateCourseDto): Promise<Course> {
+        const user = await this.userRepository.findOne({
+            where: { id: createCourseDto.userId },
+            relations: ['userRoles', 'userRoles.role']
+        });
+
+        if (!user) throw new NotFoundException('User not found');
+
+        // Verifica los roles del usuario
+        const allowedRoles = ['Docente'];
+        const userHasRole = user.userRoles.some(userRole => allowedRoles.includes(userRole.role.name));
+
+        if (!userHasRole) {
+            throw new ForbiddenException('Only users with roles "Docente" can create courses');
+        }
+
         const courseFound = await this.courseRepository.findOne({
             where: {
                 name: createCourseDto.name,
                 user: { id: createCourseDto.userId },
             },
         });
+
         if (courseFound) {
-            throw new ConflictException(`Course ${createCourseDto.name} already exists with teacher ${createCourseDto.userId}`)
+            throw new ConflictException(`Course ${createCourseDto.name} already exists with teacher ${createCourseDto.userId}`);
         }
+
+        const newCourse = this.courseRepository.create({
+            ...createCourseDto,
+            user,
+        });
+        return this.courseRepository.save(newCourse);
     }
 
     getAll(): Promise<Course[]> {

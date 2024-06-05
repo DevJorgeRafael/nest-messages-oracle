@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, HttpException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Enrollment } from '../entities/enrollment.entity';
@@ -19,12 +19,23 @@ export class EnrollmentsService {
     ) { }
 
     async create(createEnrollmentDto: CreateEnrollmentDto): Promise<Enrollment> {
-        const user = await this.userRepository.findOne({ where: { id: createEnrollmentDto.userId } });
+        const user = await this.userRepository.findOne({
+            where: { id: createEnrollmentDto.userId },
+            relations: ['userRoles', 'userRoles.role']
+        });
         const course = await this.courseRepository.findOne({ where: { id: createEnrollmentDto.courseId } });
 
-        if (!user || !course) {
-            throw new NotFoundException('User or Course not found');
+        if (!user ) throw new HttpException('User not found', 404);
+
+        // Verifica los roles del usuario
+        const allowedRoles = ['Estudiante'];
+        const userHasRole = user.userRoles.some(userRole => allowedRoles.includes(userRole.role.name));
+
+        if (!userHasRole) {
+            throw new ForbiddenException('Only users with roles "Estudiante" can create enrollments');
         }
+
+        if (!course) throw new HttpException('Course not found', 404);
 
         const enrollmentFound = await this.enrollmentRepository.findOne({
             where: {
@@ -53,7 +64,7 @@ export class EnrollmentsService {
             where: { id },
         });
         if (!enrollment) {
-            throw new NotFoundException('Enrollment not found');
+            throw new NotFoundException(`Enrollment with ${id} not found`);
         }
         return enrollment;
     }
@@ -63,7 +74,7 @@ export class EnrollmentsService {
             where: { id },
         });
         if (!enrollment) {
-            throw new NotFoundException('Enrollment not found');
+            throw new NotFoundException(`Enrollment with ${id} not found`);
         }
 
         Object.assign(enrollment, updateEnrollmentDto);
@@ -73,7 +84,7 @@ export class EnrollmentsService {
     async remove(id: number): Promise<void> {
         const result = await this.enrollmentRepository.delete(id);
         if (result.affected === 0) {
-            throw new NotFoundException('Enrollment not found');
+            throw new NotFoundException(`Enrollment with ${id} not found`);
         }
     }
 }

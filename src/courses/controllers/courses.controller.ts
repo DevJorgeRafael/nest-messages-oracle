@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { CoursesService } from '../services/courses.service';
 import { CreateCourseDto } from '../dto/create-course.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
@@ -18,17 +18,17 @@ export class CoursesController {
     }
 
     @Get(':id')
-    async getById(id: number) {
+    async getById(@Param('id', ParseIntPipe) id: number) {
         return this.coursesService.getById(id);
     }
 
     @Patch(':id')
-    async update(@Param('id') id: number, @Body() updateCourseDto: UpdateCourseDto) {
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateCourseDto: UpdateCourseDto) {
         return this.coursesService.update(id, updateCourseDto);
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: number) {
+    async remove(@Param('id', ParseIntPipe) id: number) {
         return this.coursesService.remove(id);
     }
 }
