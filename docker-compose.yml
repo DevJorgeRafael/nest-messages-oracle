@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe
+    ports:
+      - 1522:1521  # Mapea el puerto 1521 del contenedor al puerto 1522 en tu máquina
+    environment:
+      ORACLE_PASSWORD: oracle  # Contraseña para el usuario SYSTEM
+    volumes:
+      - C:/Users/rafae/Downloads/6to\ Semestre/Aplicaciones\ Distribuidas/Project/oracle-data:/opt/oracle/oradata  # Volumen para persistir datos

@@ -11,10 +11,10 @@ import { CoursesModule } from './courses/courses.module';
     TypeOrmModule.forRoot({
       type: "oracle",
       host: "localhost",
-      port: 1521,
-      username: 'developer',
-      password: 'Salsa123',
-      serviceName: 'XEPDB1',
+      port: 1522,
+      username: 'system',
+      password: 'oracle',
+      serviceName: 'XE',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true
     }
