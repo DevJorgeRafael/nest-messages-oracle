@@ -6,7 +6,7 @@ import { EnrollmentsService } from './services/enrollments.service';
 import { EnrollmentsController } from './controllers/enrollments.controller';
 import { Course } from './entities/course.entity';
 import { Enrollment } from './entities/enrollment.entity';
-import { User } from '../users/user.entity';  // Asegúrate de importar User
+import { User } from '../users/user.entity';
 import { UsersModule } from '../users/users.module';
 
 @Module({
