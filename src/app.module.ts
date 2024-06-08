@@ -11,9 +11,9 @@ import { CoursesModule } from './courses/courses.module';
     TypeOrmModule.forRoot({
       type: "oracle",
       host: "localhost",
-      port: 1522,
-      username: 'system',
-      password: 'oracle',
+      port: 1521,
+      username: 'developer',
+      password: 'developer',
       serviceName: 'XE',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true
