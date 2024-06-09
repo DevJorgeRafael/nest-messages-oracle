@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UsersModule } from './users/users.module';
 import { RoleModule } from './role/roles.module';
 import { CoursesModule } from './courses/courses.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -17,11 +18,11 @@ import { CoursesModule } from './courses/courses.module';
       serviceName: 'XE',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true
-    }
-),
+    }),
     UsersModule,
     RoleModule,
     CoursesModule,
+    MessagesModule,
     
   ],
   controllers: [AppController],

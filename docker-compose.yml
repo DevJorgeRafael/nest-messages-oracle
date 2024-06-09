@@ -9,7 +9,7 @@ services:
       ORACLE_PASSWORD: oracle  # Contraseña para el usuario SYSTEM
     volumes:
       - oracle-data:/opt/oracle/oradata  # Volumen de Docker
-    restart: unless-stopped  # Política de reinicio automático al iniciar Docker
+    restart: always   # Política de reinicio automática
 
 volumes:
   oracle-data:  # Define el volumen de Docker
